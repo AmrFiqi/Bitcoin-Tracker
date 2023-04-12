@@ -8,9 +8,9 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIPickerViewDataSource {
+class ViewController: UIViewController {
     
-
+    
     // MARK: - IBOutlets
     
     @IBOutlet var bitcoinPriceLabel: UILabel!
@@ -26,12 +26,15 @@ class ViewController: UIViewController, UIPickerViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        coinManager.delegate = self
         currencyPicker.dataSource = self
         currencyPicker.delegate = self
     }
-    
-    
-    // MARK: - UI Picker View Data Source Methods
+}
+
+// MARK: - UI Picker View Data Source Methods
+
+extension ViewController: UIPickerViewDataSource {
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -40,7 +43,6 @@ class ViewController: UIViewController, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return coinManager.currencyArray.count
     }
-    
 }
 
 // MARK: - UI Picker View Delegate
@@ -53,6 +55,20 @@ extension ViewController: UIPickerViewDelegate {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         coinManager.getCoinPrice(for: coinManager.currencyArray[row])
+        self.currencyLabel.text = self.coinManager.currencyArray[row]
+    }
+}
+
+// MARK: - Coin Manager Delegate
+
+extension ViewController: CoinManagerDelegate {
+    func didUpdatePrice(_ coinManager: CoinManager, coin: CoinModel) {
+        DispatchQueue.main.async {
+            self.bitcoinPriceLabel.text = coin.priceString
+        }
+    }
+    func didFailWithError(error: Error) {
+        print(String(describing: error))
     }
 }
 

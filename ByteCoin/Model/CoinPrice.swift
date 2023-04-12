@@ -8,9 +8,12 @@
 
 import Foundation
 
-struct CoinPrice {
-    var exchangeRate: String
- 
+struct CoinPrice: Decodable {
+    var exchangeRate: Double
+    
+    var exchangeRateString: String {
+        String(format: "%.2f", exchangeRate)
+    }
     enum CodingKeys: String, CodingKey {
         case exchangeRate = "rate"
     }
